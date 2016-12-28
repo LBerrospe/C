@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1480780997 source:c:\users\lalo\desktop\taller graficas por computadora\main.cpp
+	<windows.h>
+	<GL/gl.h>
+	<GL/glut.h>
+	<stdio.h>
+	<math.h>
+	<time.h>
+	<GL/glext.h>
+	<stack>
+
+976688572 c:\program files (x86)\codeblocks\mingw\include\glut\include\gl\glut.h
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+
