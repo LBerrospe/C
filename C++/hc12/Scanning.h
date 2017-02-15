@@ -16,14 +16,12 @@ private:
     void operandWritingRules( string ope );
 
 public:
-	Scanning(){};
+    Scanning(){};
     Scanning( char* filePath );
-
-	void initialize( char* filePath );
-
+    void initialize( char* filePath );
     void setSourceCode( char* filePath );
+    
     string getSourceCode(){return sourceCode;}//getSourceCode
-
     string getLabel(){return label;};
     string getOperation(){return operation;};
     string getOperand(){return operand;};
