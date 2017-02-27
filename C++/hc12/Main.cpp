@@ -2,6 +2,6 @@
 
 int main()
 {
-    Parsing p("P1ASM_E.txt");
+    Parsing p("P2ASM_E.txt");
     p.parse();
 }//main

@@ -3,6 +3,7 @@
 #include "Token.h"
 #include "StringTokenizer.h"
 #include "Scanning.h"
+#include "SemanticAnalyzer.h"
 using namespace std;
 
 class Parsing{
@@ -12,6 +13,7 @@ private:
     Token label;
     Token operation;
     Token operand;
+    SemanticAnalyzer sa;
 
     bool iStringComparison( string str1, string str2 )
     {
@@ -37,45 +39,76 @@ private:
 
 public:
     Parsing(){}//Parsing
-
     Parsing(char* filePath)
     {
         s.initialize(filePath);
         st.initialize(s.getSourceCode(),"\n");
+        sa.initialize("Symbol table/symbolTable.txt");
     }//Parsing
 
     void initialize(char* filePath)
     {
         s.initialize(filePath);
         st.initialize(s.getSourceCode(),"\n");
+        sa.initialize("Symbol table/symbolTable.txt");
     }//initialize
 
     void parse()
     {
         bool foundEnd=false;
-        do
-        {
-            s.nextTokens(st.nextToken());
-            if (!( iStringComparison(s.getLabel(), "")
-                && iStringComparison(s.getOperation(),"")
-                && iStringComparison(s.getOperand(), "")))
-            {
-                label.initialize(LABEL, s.getLabel());
-                operation.initialize(OPERATION, s.getOperation());
-                operand.initialize(OPERAND, s.getOperand());
-                if (iStringComparison(operation.getAttributeValue(), ""))
-                {
-                    cout << "\tSYNTAX ERROR: MUST HAVE TOKEN: <" << operation.getTokenName()
-                        <<",attribute value>" <<endl;
-                }//end if
-            }//end if
-            foundEnd=iStringComparison(operation.getAttributeValue(), "END");
-            cout << endl;
-        }while (!foundEnd && st.hasMoreTokens());
-        if (!foundEnd)
-        {
-            cout << "\tSYNTAX ERROR: MUST HAVE TOKEN: <" << operation.getTokenName()
-                 <<",END>" << endl;
-        }//end if
+		if (st.hasMoreTokens())
+		{
+			while (!foundEnd && st.hasMoreTokens())
+			{
+				s.nextTokens(st.nextToken());       //get the next line
+				if (!( iStringComparison(s.getLabel(), "")      //if is not a comment
+					&& iStringComparison(s.getOperation(),"")   //if is not a comment
+					&& iStringComparison(s.getOperand(), "")))  //if is not a comment
+				{
+					label.initialize(LABEL, s.getLabel());
+					operation.initialize(OPERATION, s.getOperation());
+					operand.initialize(OPERAND, s.getOperand());
+					if (iStringComparison(operation.getAttributeValue(), ""))   //must have an operation
+					{
+						cout << "\tSYNTAX ERROR: MUST HAVE TOKEN: <" << operation.getTokenName()
+							<<",attribute value>" <<endl;
+					}//END IF
+					else    //if its syntax is correct..
+					{
+						if (sa.searchOperation(operation.getAttributeValue()))
+						{
+							if (sa.operationHasOperand(operation.getAttributeValue()))
+							{
+								if (iStringComparison(operand.getAttributeValue(),""))
+								{
+									cout << "\tERROR: MUST HAVE OPERAND" << endl;
+								}//END IF
+							}//END IF
+							else    //if doesn't has operand
+							{
+								if (!iStringComparison(operand.getAttributeValue(),""))
+								{
+									cout << "\tERROR: MUST NOT HAVE OPERAND" << endl;
+								}//END IF
+							}//END ELSE
+
+							sa.addressingModeToString(operand.getAttributeValue());
+						}//END IF
+						else
+						{
+							cout << "\tERROR: OPERATION DOES NOT FOUND" << endl;
+						}//END ELSE
+					}//END ELSE
+				}//end if
+				foundEnd=iStringComparison(operation.getAttributeValue(), "END");
+			}//END WHILE
+
+			if (!foundEnd)
+			{
+				cout << "\tSYNTAX ERROR: MUST HAVE TOKEN: <" << operation.getTokenName()
+					 <<",END>" << endl;
+			}//end if
+		}//END IF
+        
     }//readLine
 };
